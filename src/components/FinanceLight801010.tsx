@@ -29,10 +29,11 @@ const defaultState = (() => {
 })();
 
 function usePersistentState<T>(key: string, initial: T) {
-  const [state, setState] = useState<T>(initial);
-  const set = (next: T) => {
-    setState(next);
-    try { localStorage.setItem(key, JSON.stringify(next)); } catch {}
+  const [state, _setState] = useState<T>(initial);
+  const set = (next: T | ((prev: T) => T)) => {
+    const value = typeof next === "function" ? (next as (p: T) => T)(state) : next;
+    _setState(value);
+    try { localStorage.setItem(key, JSON.stringify(value)); } catch {}
   };
   return [state, set] as const;
 }
@@ -49,7 +50,7 @@ export default function FinanceLight801010() {
   const { monthISO, incomes, expenses, categories, debts } = state as any;
   const [tab, setTab] = useState<'input'|'analytics'>('input');
 
-  // Ключ за ремоунт при завъртане/resize → стабилен Recharts и layout
+  // ремоунт на графиката при завъртане/resize
   const [viewportW, setViewportW] = useState<number>(typeof window !== 'undefined' ? window.innerWidth : 0);
   useEffect(() => {
     const onResize = () => setViewportW(window.innerWidth);
@@ -71,20 +72,21 @@ export default function FinanceLight801010() {
   const [incLabel, setIncLabel] = useState<string>("Приход");
   const [incDate, setIncDate] = useState<string>(today);
 
-  const saveState = (patch: any) => setState({ ...(state as any), ...patch });
+  const saveState = (patch: Partial<typeof state> | ((prev: any) => any)) =>
+    setState((prev: any) => (typeof patch === "function" ? patch(prev) : ({ ...prev, ...patch })));
 
   const addExpense = () => {
     const amt = Number(expAmount);
     if (!amt) return;
     const item: Expense = { id: Date.now(), date: expDate, category: expCat, note: expNote.trim(), amount: amt };
-    saveState({ expenses: [item, ...expenses] });
+    saveState((prev: any) => ({ ...prev, expenses: [item, ...prev.expenses] }));
     setExpAmount(''); setExpNote(""); setExpCat(categories[0] || "Други"); setExpDate(today);
   };
   const addIncome = () => {
     const amt = Number(incAmount);
     if (!amt) return;
     const item: Income = { id: Date.now(), date: incDate, label: incLabel.trim() || "Приход", amount: amt };
-    saveState({ incomes: [item, ...incomes] });
+    saveState((prev: any) => ({ ...prev, incomes: [item, ...prev.incomes] }));
     setIncAmount(''); setIncLabel("Приход"); setIncDate(today);
   };
 
@@ -112,18 +114,28 @@ export default function FinanceLight801010() {
   const byCat = Object.entries(byCatMap).filter(([,v]) => v>0).map(([name, value]) => ({ name, value }));
   const pieData = byCat.length ? byCat : [{ name: "Няма разходи", value: 1 }];
 
+  // само изтриване (по твое желание)
+  const deleteExp = (id: number) => {
+    saveState((prev: any) => ({ ...prev, expenses: (prev.expenses as Expense[]).filter(e => e.id !== id) }));
+  };
+  const deleteInc = (id: number) => {
+    saveState((prev: any) => ({ ...prev, incomes: (prev.incomes as Income[]).filter(i => i.id !== id) }));
+  };
+
   const [debtName, setDebtName] = useState<string>("");
   const [debtAmount, setDebtAmount] = useState<number|''>('');
   const addDebt = () => {
     const amt = Number(debtAmount);
     if (!debtName.trim() || !amt) return;
-    saveState({ debts: [{ id: Date.now(), name: debtName.trim(), amount: amt, done:false }, ...(debts as Debt[])] });
+    saveState((prev: any) => ({ ...prev, debts: [{ id: Date.now(), name: debtName.trim(), amount: amt, done:false }, ...(prev.debts as Debt[])] }));
     setDebtName(""); setDebtAmount('');
   };
   const toggleDebt = (id: number) => {
-    saveState({ debts: (debts as Debt[]).map((d)=> d.id===id ? { ...d, done: !d.done } : d) });
+    saveState((prev: any) => ({ ...prev, debts: (prev.debts as Debt[]).map(d => d.id===id ? { ...d, done: !d.done } : d) }));
   };
-  const deleteDebt = (id: number) => { saveState({ debts: (debts as Debt[]).filter((d)=> d.id!==id) }); };
+  const deleteDebt = (id: number) => {
+    saveState((prev: any) => ({ ...prev, debts: (prev.debts as Debt[]).filter(d => d.id !== id) }));
+  };
 
   const exportCSV = () => {
     const rows: string[] = [];
@@ -144,14 +156,6 @@ export default function FinanceLight801010() {
     URL.revokeObjectURL(url);
   };
 
-  function deleteExp(id: number): void {
-    throw new Error("Function not implemented.");
-  }
-
-  function deleteInc(id: number): void {
-    throw new Error("Function not implemented.");
-  }
-
   return (
     <div className="min-h-dvh bg-[#fafaf7] text-slate-800 overflow-x-hidden">
       <div className="mx-auto max-w-3xl w-full px-3 sm:px-6 py-4 sm:py-6">
@@ -160,8 +164,8 @@ export default function FinanceLight801010() {
           <h1 className="text-lg sm:text-xl font-semibold tracking-tight truncate"></h1>
           <div className="flex items-center gap-2 min-w-0">
             <nav className="rounded-xl border border-slate-200 bg-white p-1 shadow-sm text-sm flex-shrink-0">
-              <button onClick={()=>setTab('input')} className={`px-3 py-1 rounded-lg ${tab==='input'?'bg-[#f4f1e8]':''}`}>Въвеждане</button>
-              <button onClick={()=>setTab('analytics')} className={`px-3 py-1 rounded-lg ${tab==='analytics'?'bg-[#eaf7f1]':''}`}>Анализ</button>
+              <button type="button" onClick={()=>setTab('input')} className={`px-3 py-1 rounded-lg ${tab==='input'?'bg-[#f4f1e8]':''}`}>Въвеждане</button>
+              <button type="button" onClick={()=>setTab('analytics')} className={`px-3 py-1 rounded-lg ${tab==='analytics'?'bg-[#eaf7f1]':''}`}>Анализ</button>
             </nav>
             <input
               type="month"
@@ -183,7 +187,7 @@ export default function FinanceLight801010() {
                 </select>
                 <input placeholder="Бележка (по желание)" value={expNote} onChange={e=>setExpNote(e.target.value)} className="col-span-2 sm:col-span-1 rounded-xl border border-slate-200 px-2 py-2 text-[16px] w-full min-w-0" />
                 <input type="number" inputMode="decimal" placeholder="Сума" value={expAmount} onChange={e=>setExpAmount(Number(e.target.value))} className="col-span-1 rounded-xl border border-slate-200 px-2 py-2 text-[16px] w-full min-w-0" />
-                <button onClick={addExpense} className="col-span-1 rounded-xl border border-slate-200 bg-[#f4f1e8] px-3 py-2 text-[16px] hover:bg-[#eee9dc] w-full">+ Добави</button>
+                <button type="button" onClick={addExpense} className="col-span-1 rounded-xl border border-slate-200 bg-[#f4f1e8] px-3 py-2 text-[16px] hover:bg-[#eee9dc] w-full">+ Добави</button>
               </div>
             </Card>
 
@@ -192,7 +196,7 @@ export default function FinanceLight801010() {
                 <input type="date" value={incDate} onChange={e=>setIncDate(e.target.value)} className="col-span-2 rounded-xl border border-slate-200 px-2 py-2 text-[16px] w-full min-w-0" />
                 <input placeholder="Етикет" value={incLabel} onChange={e=>setIncLabel(e.target.value)} className="col-span-2 sm:col-span-2 rounded-xl border border-slate-200 px-2 py-2 text-[16px] w-full min-w-0" />
                 <input type="number" inputMode="decimal" placeholder="Сума" value={incAmount} onChange={e=>setIncAmount(Number(e.target.value))} className="col-span-1 rounded-xl border border-slate-200 px-2 py-2 text-[16px] w-full min-w-0" />
-                <button onClick={addIncome} className="col-span-1 rounded-xl border border-slate-200 bg-[#eaf7f1] px-3 py-2 text-[16px] hover:bg-[#ddf1e7] w-full">+ Добави</button>
+                <button type="button" onClick={addIncome} className="col-span-1 rounded-xl border border-slate-200 bg-[#eaf7f1] px-3 py-2 text-[16px] hover:bg-[#ddf1e7] w-full">+ Добави</button>
               </div>
             </Card>
           </section>
@@ -231,7 +235,7 @@ export default function FinanceLight801010() {
                 <div className="grid grid-cols-5 gap-2 items-center mb-2">
                   <input placeholder="Име" value={debtName} onChange={e=>setDebtName(e.target.value)} className="col-span-2 rounded-xl border border-slate-200 px-2 py-2 text-[16px] w-full min-w-0"/>
                   <input type="number" inputMode="decimal" placeholder="Сума" value={debtAmount} onChange={e=>setDebtAmount(Number(e.target.value))} className="col-span-2 rounded-xl border border-slate-200 px-2 py-2 text-[16px] w-full min-w-0"/>
-                  <button onClick={addDebt} className="col-span-1 rounded-xl border border-slate-200 bg-[#f4f1e8] px-3 py-2 text-[16px] hover:bg-[#eee9dc] w-full">+ Добави</button>
+                  <button type="button" onClick={addDebt} className="col-span-1 rounded-xl border border-slate-200 bg-[#f4f1e8] px-3 py-2 text-[16px] hover:bg-[#eee9dc] w-full">+ Добави</button>
                 </div>
                 {(!debts || (debts as Debt[]).length===0) ? (
                   <Empty>Няма въведени дългове.</Empty>
@@ -245,7 +249,7 @@ export default function FinanceLight801010() {
                         </label>
                         <div className="flex items-center gap-2">
                           <span className="font-medium">{round2(d.amount)} {CURRENCY}</span>
-                          <button onClick={()=>deleteDebt(d.id)} className="rounded-lg px-2 py-0.5 text-xs ring-1">✕</button>
+                          <button type="button" onClick={()=>deleteDebt(d.id)} className="rounded-lg px-2 py-0.5 text-xs ring-1">✕</button>
                         </div>
                       </li>
                     ))}
@@ -263,11 +267,11 @@ export default function FinanceLight801010() {
                   <div className="overflow-x-auto">
                     <table className="min-w-full table-fixed text-sm">
                       <colgroup>
-                        <col className="w-[5.5rem]" />     {/* дата */}
-                        <col className="w-[7.5rem]" />     {/* категория */}
-                        <col />                             {/* бележка */}
-                        <col className="w-[6.5rem]" />     {/* сума */}
-                        <col className="w-[3rem]" />       {/* actions */}
+                        <col className="w-[5.5rem]" />
+                        <col className="w-[7.5rem]" />
+                        <col />
+                        <col className="w-[6.5rem]" />
+                        <col className="w-[3rem]" />
                       </colgroup>
                       <thead>
                         <tr className="text-left text-xs opacity-60">
@@ -289,7 +293,7 @@ export default function FinanceLight801010() {
                             </td>
                             <td className="py-1 text-right">
                               <div className="flex justify-end gap-1">
-                                <button onClick={()=>deleteExp(e.id)} className="rounded-lg px-2 py-0.5 text-xs ring-1">✕</button>
+                                <button type="button" onClick={()=>deleteExp(e.id)} className="rounded-lg px-2 py-0.5 text-xs ring-1">✕</button>
                               </div>
                             </td>
                           </tr>
@@ -308,7 +312,7 @@ export default function FinanceLight801010() {
                     <table className="min-w-full table-fixed text-sm">
                       <colgroup>
                         <col className="w-[5.5rem]" />
-                        <col />               {/* етикет */}
+                        <col />
                         <col className="w-[6.5rem]" />
                         <col className="w-[3rem]" />
                       </colgroup>
@@ -330,7 +334,7 @@ export default function FinanceLight801010() {
                             </td>
                             <td className="py-1 text-right">
                               <div className="flex justify-end gap-1">
-                                <button onClick={()=>deleteInc(i.id)} className="rounded-lg px-2 py-0.5 text-xs ring-1">✕</button>
+                                <button type="button" onClick={()=>deleteInc(i.id)} className="rounded-lg px-2 py-0.5 text-xs ring-1">✕</button>
                               </div>
                             </td>
                           </tr>
@@ -343,7 +347,7 @@ export default function FinanceLight801010() {
             </div>
 
             <div className="flex justify-end">
-              <button onClick={exportCSV} className="rounded-xl border border-slate-200 bg-white px-3 py-1 text-sm shadow-sm hover:bg-slate-50">Експорт в Excel (CSV)</button>
+              <button type="button" onClick={exportCSV} className="rounded-xl border border-slate-200 bg-white px-3 py-1 text-sm shadow-sm hover:bg-slate-50">Експорт в Excel (CSV)</button>
             </div>
           </section>
         )}
