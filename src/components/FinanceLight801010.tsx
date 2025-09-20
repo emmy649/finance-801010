@@ -155,7 +155,7 @@ export default function FinanceLight801010() {
       <div className="mx-auto max-w-3xl w-full px-3 sm:px-6 py-4 sm:py-6">
         {/* Header */}
         <header className="mb-4 flex items-center justify-between gap-2 min-w-0">
-          <h1 className="text-lg sm:text-xl font-semibold tracking-tight truncate">Финанси 80/10/10</h1>
+          <h1 className="text-lg sm:text-xl font-semibold tracking-tight truncate"></h1>
           <div className="flex items-center gap-2 min-w-0">
             <nav className="rounded-xl border border-slate-200 bg-white p-1 shadow-sm text-sm flex-shrink-0">
               <button onClick={()=>setTab('input')} className={`px-3 py-1 rounded-lg ${tab==='input'?'bg-[#f4f1e8]':''}`}>Въвеждане</button>
