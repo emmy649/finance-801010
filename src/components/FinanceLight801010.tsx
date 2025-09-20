@@ -151,62 +151,70 @@ export default function FinanceLight801010() {
   };
 
   return (
-    <div className="min-h-dvh bg-[#fafaf7] text-slate-800">
-      <div className="mx-auto max-w-3xl p-4 sm:p-6">
-        <header className="mb-4 flex items-center justify-between gap-2">
-          <h1 className="text-lg sm:text-xl font-semibold tracking-tight">Финанси 80/10/10</h1>
-          <div className="flex items-center gap-2">
-            <nav className="rounded-xl border border-slate-200 bg-white p-1 shadow-sm text-sm">
+    <div className="min-h-dvh bg-[#fafaf7] text-slate-800 overflow-x-hidden">
+      <div className="mx-auto max-w-3xl w-full px-3 sm:px-6 py-4 sm:py-6">
+        {/* Header */}
+        <header className="mb-4 flex items-center justify-between gap-2 min-w-0">
+          <h1 className="text-lg sm:text-xl font-semibold tracking-tight truncate">Финанси 80/10/10</h1>
+          <div className="flex items-center gap-2 min-w-0">
+            <nav className="rounded-xl border border-slate-200 bg-white p-1 shadow-sm text-sm flex-shrink-0">
               <button onClick={()=>setTab('input')} className={`px-3 py-1 rounded-lg ${tab==='input'?'bg-[#f4f1e8]':''}`}>Въвеждане</button>
               <button onClick={()=>setTab('analytics')} className={`px-3 py-1 rounded-lg ${tab==='analytics'?'bg-[#eaf7f1]':''}`}>Анализ</button>
             </nav>
-            <input type="month" value={monthISO} onChange={(e)=>setMonth(e.target.value)} className="rounded-xl border border-slate-200 bg-white px-3 py-1 text-sm shadow-sm"/>
+            <input
+              type="month"
+              value={monthISO}
+              onChange={(e)=>setMonth(e.target.value)}
+              className="rounded-xl border border-slate-200 bg-white px-3 py-1 text-sm shadow-sm w-[9.5rem]"
+            />
           </div>
         </header>
 
-        {/* СТРАНИЦА 1: Въвеждане */}
+        {/* СТР. 1: Въвеждане */}
         {tab==='input' && (
-          <section className="grid gap-3">
+          <section className="grid gap-3 min-w-0">
             <Card title="Бърз разход">
-              <div className="grid grid-cols-2 sm:grid-cols-6 gap-2 items-center">
-                <input type="date" value={expDate} onChange={e=>setExpDate(e.target.value)} className="col-span-2 rounded-xl border border-slate-200 px-2 py-1 text-sm" />
-                <select value={expCat} onChange={e=>setExpCat(e.target.value)} className="col-span-2 rounded-xl border border-slate-200 px-2 py-1 text-sm">
+              <div className="grid grid-cols-2 sm:grid-cols-6 gap-2 items-center min-w-0">
+                <input type="date" value={expDate} onChange={e=>setExpDate(e.target.value)} className="col-span-2 rounded-xl border border-slate-200 px-2 py-1 text-sm w-full min-w-0" />
+                <select value={expCat} onChange={e=>setExpCat(e.target.value)} className="col-span-2 rounded-xl border border-slate-200 px-2 py-1 text-sm w-full min-w-0">
                   {(categories as string[]).map((c)=> <option key={c}>{c}</option>)}
                 </select>
-                <input placeholder="Бележка (по желание)" value={expNote} onChange={e=>setExpNote(e.target.value)} className="col-span-2 sm:col-span-1 rounded-xl border border-slate-200 px-2 py-1 text-sm" />
-                <input type="number" inputMode="decimal" placeholder="Сума" value={expAmount} onChange={e=>setExpAmount(Number(e.target.value))} className="col-span-1 rounded-xl border border-slate-200 px-2 py-1 text-sm" />
-                <button onClick={addExpense} className="col-span-1 rounded-xl border border-slate-200 bg-[#f4f1e8] px-3 py-1 text-sm hover:bg-[#eee9dc]">+ Добави</button>
+                <input placeholder="Бележка (по желание)" value={expNote} onChange={e=>setExpNote(e.target.value)} className="col-span-2 sm:col-span-1 rounded-xl border border-slate-200 px-2 py-1 text-sm w-full min-w-0" />
+                <input type="number" inputMode="decimal" placeholder="Сума" value={expAmount} onChange={e=>setExpAmount(Number(e.target.value))} className="col-span-1 rounded-xl border border-slate-200 px-2 py-1 text-sm w-full min-w-0" />
+                <button onClick={addExpense} className="col-span-1 rounded-xl border border-slate-200 bg-[#f4f1e8] px-3 py-1 text-sm hover:bg-[#eee9dc] w-full">+ Добави</button>
               </div>
             </Card>
 
             <Card title="Бърз приход">
-              <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 items-center">
-                <input type="date" value={incDate} onChange={e=>setIncDate(e.target.value)} className="col-span-2 rounded-xl border border-slate-200 px-2 py-1 text-sm" />
-                <input placeholder="Етикет" value={incLabel} onChange={e=>setIncLabel(e.target.value)} className="col-span-2 sm:col-span-2 rounded-xl border border-slate-200 px-2 py-1 text-sm" />
-                <input type="number" inputMode="decimal" placeholder="Сума" value={incAmount} onChange={e=>setIncAmount(Number(e.target.value))} className="col-span-1 rounded-xl border border-slate-200 px-2 py-1 text-sm" />
-                <button onClick={addIncome} className="col-span-1 rounded-xl border border-slate-200 bg-[#eaf7f1] px-3 py-1 text-sm hover:bg-[#ddf1e7]">+ Добави</button>
+              <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 items-center min-w-0">
+                <input type="date" value={incDate} onChange={e=>setIncDate(e.target.value)} className="col-span-2 rounded-xl border border-slate-200 px-2 py-1 text-sm w-full min-w-0" />
+                <input placeholder="Етикет" value={incLabel} onChange={e=>setIncLabel(e.target.value)} className="col-span-2 sm:col-span-2 rounded-xl border border-slate-200 px-2 py-1 text-sm w-full min-w-0" />
+                <input type="number" inputMode="decimal" placeholder="Сума" value={incAmount} onChange={e=>setIncAmount(Number(e.target.value))} className="col-span-1 rounded-xl border border-slate-200 px-2 py-1 text-sm w-full min-w-0" />
+                <button onClick={addIncome} className="col-span-1 rounded-xl border border-slate-200 bg-[#eaf7f1] px-3 py-1 text-sm hover:bg-[#ddf1e7] w-full">+ Добави</button>
               </div>
             </Card>
           </section>
         )}
 
-        {/* СТРАНИЦА 2: Анализ */}
+        {/* СТР. 2: Анализ */}
         {tab==='analytics' && (
-          <section className="grid gap-4">
-            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+          <section className="grid gap-4 min-w-0">
+            {/* Summary strip */}
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 min-w-0">
               <Summary label="Приходи (месец)" value={totalInc} />
               <Summary label="Разходи (месец)" value={totalExp} />
               <Summary label="Баланс (месец)" value={balance} tone={balance>=0?"pos":"neg"} />
               <Summary label="Желан доход" value={desiredIncome} hint={`разходи / 80%`}>
                 <div className="mt-1 text-[11px] opacity-70">
-                  Разлика: <b className={`${desiredDiff>0?'text-rose-600':desiredDiff<0?'text-emerald-600':''}`}>{round2(desiredDiff)} {CURRENCY}</b>
-                  {" " + (desiredDiff>0? "(недостига)" : desiredDiff<0? "(излишък)" : "")}
+                  Разлика: <b className={`${desiredDiff>0?'text-rose-600':desiredDiff<0?'text-emerald-600':''}`}>{round2(desiredDiff)} {CURRENCY}</b>{" "}
+                  {desiredDiff>0? "(недостига)" : desiredDiff<0? "(излишък)" : ""}
                   <br/>Необходима сума: <b className="text-rose-600">{round2(requiredExtra)} {CURRENCY}</b>
                 </div>
               </Summary>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            {/* 80/10/10 + Donut + Debts */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 min-w-0">
               <TinyCard title="Разпределение по 80/10/10">
                 <div className="grid grid-cols-3 gap-2 text-sm">
                   <div><div className="opacity-70">Основни</div><div className="font-medium">{round2(sNeeds)} {CURRENCY}</div></div>
@@ -214,12 +222,14 @@ export default function FinanceLight801010() {
                   <div><div className="opacity-70">Удоволствия</div><div className="font-medium">{round2(sFun)} {CURRENCY}</div></div>
                 </div>
               </TinyCard>
+
               <Donut title="Къде отидоха парите (категории)" data={pieData} />
+
               <TinyCard title="Дългове">
                 <div className="grid grid-cols-5 gap-2 items-center mb-2">
-                  <input placeholder="Име" value={debtName} onChange={e=>setDebtName(e.target.value)} className="col-span-2 rounded-xl border border-slate-200 px-2 py-1 text-sm"/>
-                  <input type="number" inputMode="decimal" placeholder="Сума" value={debtAmount} onChange={e=>setDebtAmount(Number(e.target.value))} className="col-span-2 rounded-xl border border-slate-200 px-2 py-1 text-sm"/>
-                  <button onClick={addDebt} className="col-span-1 rounded-xl border border-slate-200 bg-[#f4f1e8] px-3 py-1 text-sm hover:bg-[#eee9dc]">+ Добави</button>
+                  <input placeholder="Име" value={debtName} onChange={e=>setDebtName(e.target.value)} className="col-span-2 rounded-xl border border-slate-200 px-2 py-1 text-sm w-full min-w-0"/>
+                  <input type="number" inputMode="decimal" placeholder="Сума" value={debtAmount} onChange={e=>setDebtAmount(Number(e.target.value))} className="col-span-2 rounded-xl border border-slate-200 px-2 py-1 text-sm w-full min-w-0"/>
+                  <button onClick={addDebt} className="col-span-1 rounded-xl border border-slate-200 bg-[#f4f1e8] px-3 py-1 text-sm hover:bg-[#eee9dc] w-full">+ Добави</button>
                 </div>
                 {(!debts || (debts as Debt[]).length===0) ? (
                   <Empty>Няма въведени дългове.</Empty>
@@ -229,7 +239,7 @@ export default function FinanceLight801010() {
                       <li key={d.id} className="flex items-center justify-between gap-2 border-t border-slate-100 pt-1">
                         <label className="flex items-center gap-2">
                           <input type="checkbox" checked={!!d.done} onChange={()=>toggleDebt(d.id)} />
-                          <span className={d.done?"line-through opacity-60":""}>{d.name}</span>
+                          <span className={d.done?"line-through opacity-60 break-words":"break-words"}>{d.name}</span>
                         </label>
                         <div className="flex items-center gap-2">
                           <span className="font-medium">{round2(d.amount)} {CURRENCY}</span>
@@ -242,55 +252,44 @@ export default function FinanceLight801010() {
               </TinyCard>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {/* Lists */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 min-w-0">
               <ListCard title="Записи – Разходи (месец)">
                 {expMonth.length===0 ? (
                   <Empty>Няма разходи за този месец.</Empty>
                 ) : (
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="text-left text-xs opacity-60">
-                        <th className="py-1">Дата</th>
-                        <th className="py-1">Категория</th>
-                        <th className="py-1">Бележка</th>
-                        <th className="py-1 text-right">Сума</th>
-                        <th></th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {expMonth.map((e)=> (
-                        <tr key={e.id} className="border-t border-slate-100">
-                          <td className="py-1">{fmtDateHuman(e.date)}</td>
-                          <td className="py-1">{editExpId===e.id ? (
-                            <select value={editExpDraft.category} onChange={ev=>setEditExpDraft({...editExpDraft, category: ev.target.value})} className="rounded-lg border border-slate-200 px-2 py-0.5">
-                              {(categories as string[]).map((c)=> <option key={c}>{c}</option>)}
-                            </select>
-                          ) : e.category}</td>
-                          <td className="py-1 opacity-80">{editExpId===e.id ? (
-                            <input value={editExpDraft.note||''} onChange={ev=>setEditExpDraft({...editExpDraft, note: ev.target.value})} className="rounded-lg border border-slate-200 px-2 py-0.5"/>
-                          ) : e.note}</td>
-                          <td className="py-1 text-right">
-                            <span className="font-medium text-rose-700">{round2(editExpId===e.id? editExpDraft.amount : e.amount)} {CURRENCY}</span>
-                          </td>
-                          <td className="py-1 text-right">
-                            {editExpId===e.id ? (
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full text-sm">
+                      <thead>
+                        <tr className="text-left text-xs opacity-60">
+                          <th className="py-1">Дата</th>
+                          <th className="py-1">Категория</th>
+                          <th className="py-1">Бележка</th>
+                          <th className="py-1 text-right">Сума</th>
+                          <th></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {expMonth.map((e)=> (
+                          <tr key={e.id} className="border-t border-slate-100">
+                            <td className="py-1 whitespace-nowrap">{fmtDateHuman(e.date)}</td>
+                            <td className="py-1 whitespace-nowrap">{e.category}</td>
+                            <td className="py-1 opacity-80 break-words max-w-[12rem]">{e.note}</td>
+                            <td className="py-1 text-right whitespace-nowrap">
+                              <span className="font-medium text-rose-700">{round2(e.amount)} {CURRENCY}</span>
+                            </td>
+                            <td className="py-1 text-right">
                               <div className="flex justify-end gap-1">
-                                <input type="date" value={editExpDraft.date} onChange={ev=>setEditExpDraft({...editExpDraft, date: ev.target.value})} className="rounded-lg border border-slate-200 px-2 py-0.5 text-xs"/>
-                                <input type="number" value={editExpDraft.amount} onChange={ev=>setEditExpDraft({...editExpDraft, amount: Number(ev.target.value)})} className="w-24 rounded-lg border border-slate-200 px-2 py-0.5 text-xs"/>
-                                <button onClick={saveEditExp} className="rounded-lg px-2 py-0.5 text-xs ring-1">💾</button>
-                                <button onClick={()=>setEditExpId(null)} className="rounded-lg px-2 py-0.5 text-xs ring-1">✖</button>
-                              </div>
-                            ) : (
-                              <div className="flex justify-end gap-1">
-                                <button onClick={()=>startEditExp(e)} className="rounded-lg px-2 py-0.5 text-xs ring-1">✎</button>
+                                {/* редакция/изтриване – по желание можеш да ги включиш */}
+                                {/* <button className="rounded-lg px-2 py-0.5 text-xs ring-1">✎</button> */}
                                 <button onClick={()=>deleteExp(e.id)} className="rounded-lg px-2 py-0.5 text-xs ring-1">✕</button>
                               </div>
-                            )}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 )}
               </ListCard>
 
@@ -298,44 +297,35 @@ export default function FinanceLight801010() {
                 {incMonth.length===0 ? (
                   <Empty>Няма приходи за този месец.</Empty>
                 ) : (
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="text-left text-xs opacity-60">
-                        <th className="py-1">Дата</th>
-                        <th className="py-1">Етикет</th>
-                        <th className="py-1 text-right">Сума</th>
-                        <th></th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {incMonth.map((i)=> (
-                        <tr key={i.id} className="border-t border-slate-100">
-                          <td className="py-1">{fmtDateHuman(i.date)}</td>
-                          <td className="py-1">{editIncId===i.id ? (
-                            <input value={editIncDraft.label} onChange={ev=>setEditIncDraft({...editIncDraft, label: ev.target.value})} className="rounded-lg border border-slate-200 px-2 py-0.5"/>
-                          ) : i.label}</td>
-                          <td className="py-1 text-right">
-                            <span className="font-medium text-emerald-700">{round2(editIncId===i.id? editIncDraft.amount : i.amount)} {CURRENCY}</span>
-                          </td>
-                          <td className="py-1 text-right">
-                            {editIncId===i.id ? (
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full text-sm">
+                      <thead>
+                        <tr className="text-left text-xs opacity-60">
+                          <th className="py-1">Дата</th>
+                          <th className="py-1">Етикет</th>
+                          <th className="py-1 text-right">Сума</th>
+                          <th></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {incMonth.map((i)=> (
+                          <tr key={i.id} className="border-t border-slate-100">
+                            <td className="py-1 whitespace-nowrap">{fmtDateHuman(i.date)}</td>
+                            <td className="py-1 break-words max-w-[12rem]">{i.label}</td>
+                            <td className="py-1 text-right whitespace-nowrap">
+                              <span className="font-medium text-emerald-700">{round2(i.amount)} {CURRENCY}</span>
+                            </td>
+                            <td className="py-1 text-right">
                               <div className="flex justify-end gap-1">
-                                <input type="date" value={editIncDraft.date} onChange={ev=>setEditIncDraft({...editIncDraft, date: ev.target.value})} className="rounded-lg border border-slate-200 px-2 py-0.5 text-xs"/>
-                                <input type="number" value={editIncDraft.amount} onChange={ev=>setEditIncDraft({...editIncDraft, amount: Number(ev.target.value)})} className="w-24 rounded-lg border border-slate-200 px-2 py-0.5 text-xs"/>
-                                <button onClick={saveEditInc} className="rounded-lg px-2 py-0.5 text-xs ring-1">💾</button>
-                                <button onClick={()=>setEditIncId(null)} className="rounded-lg px-2 py-0.5 text-xs ring-1">✖</button>
-                              </div>
-                            ) : (
-                              <div className="flex justify-end gap-1">
-                                <button onClick={()=>startEditInc(i)} className="rounded-lg px-2 py-0.5 text-xs ring-1">✎</button>
+                                {/* <button className="rounded-lg px-2 py-0.5 text-xs ring-1">✎</button> */}
                                 <button onClick={()=>deleteInc(i.id)} className="rounded-lg px-2 py-0.5 text-xs ring-1">✕</button>
                               </div>
-                            )}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 )}
               </ListCard>
             </div>
@@ -350,15 +340,16 @@ export default function FinanceLight801010() {
   );
 }
 
+/* ------- UI helpers ------- */
 const Card: React.FC<{ title: string; children?: React.ReactNode }> = ({ title, children }) => (
-  <div className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
+  <div className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm w-full max-w-full">
     <div className="mb-2 text-sm font-medium opacity-80">{title}</div>
-    {children}
+    <div className="min-w-0">{children}</div>
   </div>
 );
 
 const Summary: React.FC<{ label: string; value: number; hint?: string; tone?: 'pos'|'neg'; children?: React.ReactNode }> = ({ label, value, hint, tone, children }) => (
-  <div className={`rounded-2xl border border-slate-200 bg-white p-3 shadow-sm ${tone==='pos'? 'outline outline-1 outline-emerald-100' : tone==='neg'? 'outline outline-1 outline-rose-100' : ''}`}>
+  <div className={`rounded-2xl border border-slate-200 bg-white p-3 shadow-sm w-full max-w-full ${tone==='pos'? 'outline outline-1 outline-emerald-100' : tone==='neg'? 'outline outline-1 outline-rose-100' : ''}`}>
     <div className="text-xs opacity-60">{label}</div>
     <div className={`text-lg font-semibold ${tone==='pos'? 'text-emerald-700' : tone==='neg'? 'text-rose-700' : ''}`}>
       {round2(value)} {CURRENCY}
@@ -369,25 +360,25 @@ const Summary: React.FC<{ label: string; value: number; hint?: string; tone?: 'p
 );
 
 const TinyCard: React.FC<{ title: string; children?: React.ReactNode }> = ({ title, children }) => (
-  <div className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
+  <div className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm w-full max-w-full">
     <div className="mb-2 text-sm font-medium opacity-80">{title}</div>
-    {children}
+    <div className="min-w-0">{children}</div>
   </div>
 );
 
 const ListCard: React.FC<{ title: string; children?: React.ReactNode }> = ({ title, children }) => (
-  <div className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
+  <div className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm w-full max-w-full">
     <div className="mb-2 text-sm font-medium opacity-80">{title}</div>
-    <div className="overflow-x-auto">{children}</div>
+    <div className="min-w-0">{children}</div>
   </div>
 );
 
 const Empty: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <div className="rounded-xl border border-dashed border-slate-200 p-4 text-center text-sm opacity-60">{children}</div>
+  <div className="rounded-xl border border-dashed border-slate-200 p-4 text-center text-sm opacity-60 w-full max-w-full">{children}</div>
 );
 
 const Donut: React.FC<{ title: string; data: { name: string; value: number }[] }> = ({ title, data }) => (
-  <div className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
+  <div className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm w-full max-w-full">
     <div className="mb-2 text-sm font-medium opacity-80">{title}</div>
     <div className="h-60">
       <ResponsiveContainer width="100%" height="100%">
