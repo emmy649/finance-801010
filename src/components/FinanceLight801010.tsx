@@ -50,7 +50,7 @@ export default function FinanceLight801010() {
   const { monthISO, incomes, expenses, categories, debts } = state as any;
   const [tab, setTab] = useState<'input'|'analytics'>('input');
 
-  // ремоунт на графиката при завъртане/resize
+  // ремонт на графиката при завъртане/resize
   const [viewportW, setViewportW] = useState<number>(typeof window !== 'undefined' ? window.innerWidth : 0);
   useEffect(() => {
     const onResize = () => setViewportW(window.innerWidth);
@@ -238,7 +238,7 @@ export default function FinanceLight801010() {
                 <div className="grid grid-cols-5 gap-2 items-center mb-2">
                   <input placeholder="Име" value={debtName} onChange={e=>setDebtName(e.target.value)} className="col-span-2 rounded-xl border border-slate-200 px-2 py-2 text-[16px] w-full min-w-0"/>
                   <input type="number" inputMode="decimal" placeholder="Сума" value={debtAmount} onChange={e=>setDebtAmount(Number(e.target.value))} className="col-span-2 rounded-xl border border-slate-200 px-2 py-2 text-[16px] w-full min-w-0"/>
-                  <button type="button" onClick={addDebt} className="col-span-1 rounded-xl border border-slate-200 bg-[#f4f1e8] px-3 py-2 text-[16px] hover:bg-[#eee9dc] w-full">Добави</button>
+                  <button type="button" onClick={addDebt} className="col-span-2 rounded-xl border border-slate-200 bg-[#f4f1e8] px-3 py-2 text-[16px] hover:bg-[#eee9dc] w-full">Добави</button>
                 </div>
                 {(!debts || (debts as Debt[]).length===0) ? (
                   <Empty>Няма въведени дългове.</Empty>
