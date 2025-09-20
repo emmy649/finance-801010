@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from "recharts";
 
 const CURRENCY = "лв";
@@ -48,6 +48,18 @@ export default function FinanceLight801010() {
   const [state, setState] = usePersistentState(LS_KEY as any, defaultState);
   const { monthISO, incomes, expenses, categories, debts } = state as any;
   const [tab, setTab] = useState<'input'|'analytics'>('input');
+
+  // Ключ за ремоунт при завъртане/resize → стабилен Recharts и layout
+  const [viewportW, setViewportW] = useState<number>(typeof window !== 'undefined' ? window.innerWidth : 0);
+  useEffect(() => {
+    const onResize = () => setViewportW(window.innerWidth);
+    window.addEventListener('resize', onResize);
+    window.addEventListener('orientationchange', onResize);
+    return () => {
+      window.removeEventListener('resize', onResize);
+      window.removeEventListener('orientationchange', onResize);
+    };
+  }, []);
 
   const today = new Date().toISOString().slice(0,10);
   const [expAmount, setExpAmount] = useState<number | ''>('');
@@ -100,24 +112,6 @@ export default function FinanceLight801010() {
   const byCat = Object.entries(byCatMap).filter(([,v]) => v>0).map(([name, value]) => ({ name, value }));
   const pieData = byCat.length ? byCat : [{ name: "Няма разходи", value: 1 }];
 
-  const [editExpId, setEditExpId] = useState<number|null>(null);
-  const [editExpDraft, setEditExpDraft] = useState<any>({});
-  const startEditExp = (row: Expense) => { setEditExpId(row.id); setEditExpDraft({ ...row }); };
-  const saveEditExp = () => {
-    saveState({ expenses: (expenses as Expense[]).map((e)=> e.id===editExpId ? editExpDraft : e) });
-    setEditExpId(null);
-  };
-  const deleteExp = (id: number) => { saveState({ expenses: (expenses as Expense[]).filter((e)=> e.id!==id) }); };
-
-  const [editIncId, setEditIncId] = useState<number|null>(null);
-  const [editIncDraft, setEditIncDraft] = useState<any>({});
-  const startEditInc = (row: Income) => { setEditIncId(row.id); setEditIncDraft({ ...row }); };
-  const saveEditInc = () => {
-    saveState({ incomes: (incomes as Income[]).map((e)=> e.id===editIncId ? editIncDraft : e) });
-    setEditIncId(null);
-  };
-  const deleteInc = (id: number) => { saveState({ incomes: (incomes as Income[]).filter((e)=> e.id!==id) }); };
-
   const [debtName, setDebtName] = useState<string>("");
   const [debtAmount, setDebtAmount] = useState<number|''>('');
   const addDebt = () => {
@@ -150,6 +144,14 @@ export default function FinanceLight801010() {
     URL.revokeObjectURL(url);
   };
 
+  function deleteExp(id: number): void {
+    throw new Error("Function not implemented.");
+  }
+
+  function deleteInc(id: number): void {
+    throw new Error("Function not implemented.");
+  }
+
   return (
     <div className="min-h-dvh bg-[#fafaf7] text-slate-800 overflow-x-hidden">
       <div className="mx-auto max-w-3xl w-full px-3 sm:px-6 py-4 sm:py-6">
@@ -170,36 +172,36 @@ export default function FinanceLight801010() {
           </div>
         </header>
 
-        {/* СТР. 1: Въвеждане */}
+        {/* Въвеждане */}
         {tab==='input' && (
           <section className="grid gap-3 min-w-0">
             <Card title="Бърз разход">
               <div className="grid grid-cols-2 sm:grid-cols-6 gap-2 items-center min-w-0">
-                <input type="date" value={expDate} onChange={e=>setExpDate(e.target.value)} className="col-span-2 rounded-xl border border-slate-200 px-2 py-1 text-sm w-full min-w-0" />
-                <select value={expCat} onChange={e=>setExpCat(e.target.value)} className="col-span-2 rounded-xl border border-slate-200 px-2 py-1 text-sm w-full min-w-0">
+                <input type="date" value={expDate} onChange={e=>setExpDate(e.target.value)} className="col-span-2 rounded-xl border border-slate-200 px-2 py-2 text-[16px] w-full min-w-0" />
+                <select value={expCat} onChange={e=>setExpCat(e.target.value)} className="col-span-2 rounded-xl border border-slate-200 px-2 py-2 text-[16px] w-full min-w-0">
                   {(categories as string[]).map((c)=> <option key={c}>{c}</option>)}
                 </select>
-                <input placeholder="Бележка (по желание)" value={expNote} onChange={e=>setExpNote(e.target.value)} className="col-span-2 sm:col-span-1 rounded-xl border border-slate-200 px-2 py-1 text-sm w-full min-w-0" />
-                <input type="number" inputMode="decimal" placeholder="Сума" value={expAmount} onChange={e=>setExpAmount(Number(e.target.value))} className="col-span-1 rounded-xl border border-slate-200 px-2 py-1 text-sm w-full min-w-0" />
-                <button onClick={addExpense} className="col-span-1 rounded-xl border border-slate-200 bg-[#f4f1e8] px-3 py-1 text-sm hover:bg-[#eee9dc] w-full">+ Добави</button>
+                <input placeholder="Бележка (по желание)" value={expNote} onChange={e=>setExpNote(e.target.value)} className="col-span-2 sm:col-span-1 rounded-xl border border-slate-200 px-2 py-2 text-[16px] w-full min-w-0" />
+                <input type="number" inputMode="decimal" placeholder="Сума" value={expAmount} onChange={e=>setExpAmount(Number(e.target.value))} className="col-span-1 rounded-xl border border-slate-200 px-2 py-2 text-[16px] w-full min-w-0" />
+                <button onClick={addExpense} className="col-span-1 rounded-xl border border-slate-200 bg-[#f4f1e8] px-3 py-2 text-[16px] hover:bg-[#eee9dc] w-full">+ Добави</button>
               </div>
             </Card>
 
             <Card title="Бърз приход">
               <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 items-center min-w-0">
-                <input type="date" value={incDate} onChange={e=>setIncDate(e.target.value)} className="col-span-2 rounded-xl border border-slate-200 px-2 py-1 text-sm w-full min-w-0" />
-                <input placeholder="Етикет" value={incLabel} onChange={e=>setIncLabel(e.target.value)} className="col-span-2 sm:col-span-2 rounded-xl border border-slate-200 px-2 py-1 text-sm w-full min-w-0" />
-                <input type="number" inputMode="decimal" placeholder="Сума" value={incAmount} onChange={e=>setIncAmount(Number(e.target.value))} className="col-span-1 rounded-xl border border-slate-200 px-2 py-1 text-sm w-full min-w-0" />
-                <button onClick={addIncome} className="col-span-1 rounded-xl border border-slate-200 bg-[#eaf7f1] px-3 py-1 text-sm hover:bg-[#ddf1e7] w-full">+ Добави</button>
+                <input type="date" value={incDate} onChange={e=>setIncDate(e.target.value)} className="col-span-2 rounded-xl border border-slate-200 px-2 py-2 text-[16px] w-full min-w-0" />
+                <input placeholder="Етикет" value={incLabel} onChange={e=>setIncLabel(e.target.value)} className="col-span-2 sm:col-span-2 rounded-xl border border-slate-200 px-2 py-2 text-[16px] w-full min-w-0" />
+                <input type="number" inputMode="decimal" placeholder="Сума" value={incAmount} onChange={e=>setIncAmount(Number(e.target.value))} className="col-span-1 rounded-xl border border-slate-200 px-2 py-2 text-[16px] w-full min-w-0" />
+                <button onClick={addIncome} className="col-span-1 rounded-xl border border-slate-200 bg-[#eaf7f1] px-3 py-2 text-[16px] hover:bg-[#ddf1e7] w-full">+ Добави</button>
               </div>
             </Card>
           </section>
         )}
 
-        {/* СТР. 2: Анализ */}
+        {/* Анализ */}
         {tab==='analytics' && (
           <section className="grid gap-4 min-w-0">
-            {/* Summary strip */}
+            {/* Summary */}
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 min-w-0">
               <Summary label="Приходи (месец)" value={totalInc} />
               <Summary label="Разходи (месец)" value={totalExp} />
@@ -223,13 +225,13 @@ export default function FinanceLight801010() {
                 </div>
               </TinyCard>
 
-              <Donut title="Къде отидоха парите (категории)" data={pieData} />
+              <Donut key={viewportW} title="Къде отидоха парите (категории)" data={pieData} />
 
               <TinyCard title="Дългове">
                 <div className="grid grid-cols-5 gap-2 items-center mb-2">
-                  <input placeholder="Име" value={debtName} onChange={e=>setDebtName(e.target.value)} className="col-span-2 rounded-xl border border-slate-200 px-2 py-1 text-sm w-full min-w-0"/>
-                  <input type="number" inputMode="decimal" placeholder="Сума" value={debtAmount} onChange={e=>setDebtAmount(Number(e.target.value))} className="col-span-2 rounded-xl border border-slate-200 px-2 py-1 text-sm w-full min-w-0"/>
-                  <button onClick={addDebt} className="col-span-1 rounded-xl border border-slate-200 bg-[#f4f1e8] px-3 py-1 text-sm hover:bg-[#eee9dc] w-full">+ Добави</button>
+                  <input placeholder="Име" value={debtName} onChange={e=>setDebtName(e.target.value)} className="col-span-2 rounded-xl border border-slate-200 px-2 py-2 text-[16px] w-full min-w-0"/>
+                  <input type="number" inputMode="decimal" placeholder="Сума" value={debtAmount} onChange={e=>setDebtAmount(Number(e.target.value))} className="col-span-2 rounded-xl border border-slate-200 px-2 py-2 text-[16px] w-full min-w-0"/>
+                  <button onClick={addDebt} className="col-span-1 rounded-xl border border-slate-200 bg-[#f4f1e8] px-3 py-2 text-[16px] hover:bg-[#eee9dc] w-full">+ Добави</button>
                 </div>
                 {(!debts || (debts as Debt[]).length===0) ? (
                   <Empty>Няма въведени дългове.</Empty>
@@ -259,29 +261,34 @@ export default function FinanceLight801010() {
                   <Empty>Няма разходи за този месец.</Empty>
                 ) : (
                   <div className="overflow-x-auto">
-                    <table className="min-w-full text-sm">
+                    <table className="min-w-full table-fixed text-sm">
+                      <colgroup>
+                        <col className="w-[5.5rem]" />     {/* дата */}
+                        <col className="w-[7.5rem]" />     {/* категория */}
+                        <col />                             {/* бележка */}
+                        <col className="w-[6.5rem]" />     {/* сума */}
+                        <col className="w-[3rem]" />       {/* actions */}
+                      </colgroup>
                       <thead>
                         <tr className="text-left text-xs opacity-60">
-                          <th className="py-1">Дата</th>
-                          <th className="py-1">Категория</th>
-                          <th className="py-1">Бележка</th>
-                          <th className="py-1 text-right">Сума</th>
+                          <th className="py-1 whitespace-nowrap">Дата</th>
+                          <th className="py-1 whitespace-nowrap">Категория</th>
+                          <th className="py-1 whitespace-nowrap">Бележка</th>
+                          <th className="py-1 text-right whitespace-nowrap">Сума</th>
                           <th></th>
                         </tr>
                       </thead>
                       <tbody>
                         {expMonth.map((e)=> (
-                          <tr key={e.id} className="border-t border-slate-100">
+                          <tr key={e.id} className="border-t border-slate-100 align-top">
                             <td className="py-1 whitespace-nowrap">{fmtDateHuman(e.date)}</td>
                             <td className="py-1 whitespace-nowrap">{e.category}</td>
-                            <td className="py-1 opacity-80 break-words max-w-[12rem]">{e.note}</td>
-                            <td className="py-1 text-right whitespace-nowrap">
+                            <td className="py-1 opacity-80 break-words">{e.note}</td>
+                            <td className="py-1 text-right whitespace-nowrap font-mono tabular-nums">
                               <span className="font-medium text-rose-700">{round2(e.amount)} {CURRENCY}</span>
                             </td>
                             <td className="py-1 text-right">
                               <div className="flex justify-end gap-1">
-                                {/* редакция/изтриване – по желание можеш да ги включиш */}
-                                {/* <button className="rounded-lg px-2 py-0.5 text-xs ring-1">✎</button> */}
                                 <button onClick={()=>deleteExp(e.id)} className="rounded-lg px-2 py-0.5 text-xs ring-1">✕</button>
                               </div>
                             </td>
@@ -298,26 +305,31 @@ export default function FinanceLight801010() {
                   <Empty>Няма приходи за този месец.</Empty>
                 ) : (
                   <div className="overflow-x-auto">
-                    <table className="min-w-full text-sm">
+                    <table className="min-w-full table-fixed text-sm">
+                      <colgroup>
+                        <col className="w-[5.5rem]" />
+                        <col />               {/* етикет */}
+                        <col className="w-[6.5rem]" />
+                        <col className="w-[3rem]" />
+                      </colgroup>
                       <thead>
                         <tr className="text-left text-xs opacity-60">
-                          <th className="py-1">Дата</th>
-                          <th className="py-1">Етикет</th>
-                          <th className="py-1 text-right">Сума</th>
+                          <th className="py-1 whitespace-nowrap">Дата</th>
+                          <th className="py-1 whitespace-nowrap">Етикет</th>
+                          <th className="py-1 text-right whitespace-nowrap">Сума</th>
                           <th></th>
                         </tr>
                       </thead>
                       <tbody>
                         {incMonth.map((i)=> (
-                          <tr key={i.id} className="border-t border-slate-100">
+                          <tr key={i.id} className="border-t border-slate-100 align-top">
                             <td className="py-1 whitespace-nowrap">{fmtDateHuman(i.date)}</td>
-                            <td className="py-1 break-words max-w-[12rem]">{i.label}</td>
-                            <td className="py-1 text-right whitespace-nowrap">
+                            <td className="py-1 break-words">{i.label}</td>
+                            <td className="py-1 text-right whitespace-nowrap font-mono tabular-nums">
                               <span className="font-medium text-emerald-700">{round2(i.amount)} {CURRENCY}</span>
                             </td>
                             <td className="py-1 text-right">
                               <div className="flex justify-end gap-1">
-                                {/* <button className="rounded-lg px-2 py-0.5 text-xs ring-1">✎</button> */}
                                 <button onClick={()=>deleteInc(i.id)} className="rounded-lg px-2 py-0.5 text-xs ring-1">✕</button>
                               </div>
                             </td>
@@ -343,7 +355,7 @@ export default function FinanceLight801010() {
 /* ------- UI helpers ------- */
 const Card: React.FC<{ title: string; children?: React.ReactNode }> = ({ title, children }) => (
   <div className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm w-full max-w-full">
-    <div className="mb-2 text-sm font-medium opacity-80">{title}</div>
+    <div className="mb-2 text-sm font-medium opacity-80 whitespace-nowrap">{title}</div>
     <div className="min-w-0">{children}</div>
   </div>
 );

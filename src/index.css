@@ -9,3 +9,7 @@
 body {
   background: #fafaf7;
 }
+/* стабилизира скролбара, да не „подскача“ ширината при появяване/изчезване */
+html { scrollbar-gutter: stable both-edges; }
+/* спира scroll anchoring „подскачания“ при динамични елементи */
+body { overflow-anchor: none; }
