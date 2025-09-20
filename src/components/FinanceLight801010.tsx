@@ -21,7 +21,7 @@ const defaultState = (() => {
     incomes: [] as Income[],
     expenses: [] as Expense[],
     categories: [
-      "Жилище", "Храна", "Транспорт", "Сметки", "Здраве", "Облекло", "Дом/Хоби", "Други",
+      "Дом", "Храна", "Транспорт", "Сметки", "Здраве", "Облекло", "Хоби", "Други",
       "Образование", "Пътуване", "Кафе/Навън", "Подаръци",
     ],
     debts: [] as Debt[],
@@ -187,7 +187,7 @@ export default function FinanceLight801010() {
                 </select>
                 <input placeholder="Бележка (по желание)" value={expNote} onChange={e=>setExpNote(e.target.value)} className="col-span-2 sm:col-span-1 rounded-xl border border-slate-200 px-2 py-2 text-[16px] w-full min-w-0" />
                 <input type="number" inputMode="decimal" placeholder="Сума" value={expAmount} onChange={e=>setExpAmount(Number(e.target.value))} className="col-span-1 rounded-xl border border-slate-200 px-2 py-2 text-[16px] w-full min-w-0" />
-                <button type="button" onClick={addExpense} className="col-span-1 rounded-xl border border-slate-200 bg-[#f4f1e8] px-3 py-2 text-[16px] hover:bg-[#eee9dc] w-full">+ Добави</button>
+                <button type="button" onClick={addExpense} className="col-span-1 rounded-xl border border-slate-200 bg-[#f4f1e8] px-3 py-2 text-[16px] hover:bg-[#eee9dc] w-full">Добави</button>
               </div>
             </Card>
 
@@ -196,7 +196,7 @@ export default function FinanceLight801010() {
                 <input type="date" value={incDate} onChange={e=>setIncDate(e.target.value)} className="col-span-2 rounded-xl border border-slate-200 px-2 py-2 text-[16px] w-full min-w-0" />
                 <input placeholder="Етикет" value={incLabel} onChange={e=>setIncLabel(e.target.value)} className="col-span-2 sm:col-span-2 rounded-xl border border-slate-200 px-2 py-2 text-[16px] w-full min-w-0" />
                 <input type="number" inputMode="decimal" placeholder="Сума" value={incAmount} onChange={e=>setIncAmount(Number(e.target.value))} className="col-span-1 rounded-xl border border-slate-200 px-2 py-2 text-[16px] w-full min-w-0" />
-                <button type="button" onClick={addIncome} className="col-span-1 rounded-xl border border-slate-200 bg-[#eaf7f1] px-3 py-2 text-[16px] hover:bg-[#ddf1e7] w-full">+ Добави</button>
+                <button type="button" onClick={addIncome} className="col-span-1 rounded-xl border border-slate-200 bg-[#eaf7f1] px-3 py-2 text-[16px] hover:bg-[#ddf1e7] w-full">Добави</button>
               </div>
             </Card>
           </section>
@@ -206,26 +206,29 @@ export default function FinanceLight801010() {
         {tab==='analytics' && (
           <section className="grid gap-4 min-w-0">
             {/* Summary */}
-            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 min-w-0">
+           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 min-w-0">
               <Summary label="Приходи (месец)" value={totalInc} />
               <Summary label="Разходи (месец)" value={totalExp} />
-              <Summary label="Баланс (месец)" value={balance} tone={balance>=0?"pos":"neg"} />
-              <Summary label="Желан доход" value={desiredIncome} hint={`разходи / 80%`}>
-                <div className="mt-1 text-[11px] opacity-70">
-                  Разлика: <b className={`${desiredDiff>0?'text-rose-600':desiredDiff<0?'text-emerald-600':''}`}>{round2(desiredDiff)} {CURRENCY}</b>{" "}
-                  {desiredDiff>0? "(недостига)" : desiredDiff<0? "(излишък)" : ""}
-                  <br/>Необходима сума: <b className="text-rose-600">{round2(requiredExtra)} {CURRENCY}</b>
-                </div>
-              </Summary>
+              <Summary label="Нето резултат (Приходи − Разходи)" value={balance} tone={balance>=0?"pos":"neg"} />
+              <Summary label="Желан доход" value={desiredIncome}>
+            <div className="mt-1 text-[11px] opacity-70">
+                Текущ доход: <b className="text-emerald-700">{round2(totalInc)} {CURRENCY}</b>
+             <br/>
+                 Недостиг: <b className={`${desiredDiff>0?'text-rose-600':desiredDiff<0?'text-emerald-600':''}`}>
+                  {round2(desiredDiff)} {CURRENCY}
+            </b> {desiredDiff>0? "(за да покриеш модела)" : desiredDiff<0? "(излишък)" : ""}
+             <br/>
+                 Необходима сума: <b className="text-black">{round2(requiredExtra)} {CURRENCY}</b>
             </div>
-
+             </Summary>
+               </div>
             {/* 80/10/10 + Donut + Debts */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 min-w-0">
               <TinyCard title="Разпределение по 80/10/10">
                 <div className="grid grid-cols-3 gap-2 text-sm">
-                  <div><div className="opacity-70">Основни</div><div className="font-medium">{round2(sNeeds)} {CURRENCY}</div></div>
-                  <div><div className="opacity-70">Сигурност</div><div className="font-medium">{round2(sInvest)} {CURRENCY}</div></div>
-                  <div><div className="opacity-70">Удоволствия</div><div className="font-medium">{round2(sFun)} {CURRENCY}</div></div>
+                  <div><div className="opacity-70">Нужди</div><div className="font-medium">{round2(sNeeds)} {CURRENCY}</div></div>
+                  <div><div className="opacity-70">Желания</div><div className="font-medium">{round2(sInvest)} {CURRENCY}</div></div>
+                  <div><div className="opacity-70">Спестявания</div><div className="font-medium">{round2(sFun)} {CURRENCY}</div></div>
                 </div>
               </TinyCard>
 
@@ -235,7 +238,7 @@ export default function FinanceLight801010() {
                 <div className="grid grid-cols-5 gap-2 items-center mb-2">
                   <input placeholder="Име" value={debtName} onChange={e=>setDebtName(e.target.value)} className="col-span-2 rounded-xl border border-slate-200 px-2 py-2 text-[16px] w-full min-w-0"/>
                   <input type="number" inputMode="decimal" placeholder="Сума" value={debtAmount} onChange={e=>setDebtAmount(Number(e.target.value))} className="col-span-2 rounded-xl border border-slate-200 px-2 py-2 text-[16px] w-full min-w-0"/>
-                  <button type="button" onClick={addDebt} className="col-span-1 rounded-xl border border-slate-200 bg-[#f4f1e8] px-3 py-2 text-[16px] hover:bg-[#eee9dc] w-full">+ Добави</button>
+                  <button type="button" onClick={addDebt} className="col-span-1 rounded-xl border border-slate-200 bg-[#f4f1e8] px-3 py-2 text-[16px] hover:bg-[#eee9dc] w-full">Добави</button>
                 </div>
                 {(!debts || (debts as Debt[]).length===0) ? (
                   <Empty>Няма въведени дългове.</Empty>
@@ -319,7 +322,7 @@ export default function FinanceLight801010() {
                       <thead>
                         <tr className="text-left text-xs opacity-60">
                           <th className="py-1 whitespace-nowrap">Дата</th>
-                          <th className="py-1 whitespace-nowrap">Етикет</th>
+                          <th className="py-1 whitespace-nowrap">Категория</th>
                           <th className="py-1 text-right whitespace-nowrap">Сума</th>
                           <th></th>
                         </tr>
