@@ -199,70 +199,9 @@ export default function FinanceLight801010() {
                 <button type="button" onClick={addIncome} className="col-span-1 rounded-xl border border-slate-200 bg-[#eaf7f1] px-3 py-2 text-[16px] hover:bg-[#ddf1e7] w-full">Добави</button>
               </div>
             </Card>
-          </section>
-        )}
 
-        {/* Анализ */}
-        {tab==='analytics' && (
-          <section className="grid gap-4 min-w-0">
-            {/* Summary */}
-           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 min-w-0">
-              <Summary label="Приходи (месец)" value={totalInc} />
-              <Summary label="Разходи (месец)" value={totalExp} />
-              <Summary label="Нето резултат (Приходи − Разходи)" value={balance} tone={balance>=0?"pos":"neg"} />
-              <Summary label="Желан доход" value={desiredIncome}>
-            <div className="mt-1 text-[11px] opacity-70">
-                Текущ доход: <b className="text-emerald-700">{round2(totalInc)} {CURRENCY}</b>
-             <br/>
-                 Недостиг: <b className={`${desiredDiff>0?'text-rose-600':desiredDiff<0?'text-emerald-600':''}`}>
-                  {round2(desiredDiff)} {CURRENCY}
-            </b> {desiredDiff>0? "(за да покриеш модела)" : desiredDiff<0? "(излишък)" : ""}
-             <br/>
-                 Необходима сума: <b className="text-black">{round2(requiredExtra)} {CURRENCY}</b>
-            </div>
-             </Summary>
-               </div>
-            {/* 80/10/10 + Donut + Debts */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 min-w-0">
-              <TinyCard title="Разпределение по 80/10/10">
-                <div className="grid grid-cols-3 gap-2 text-sm">
-                  <div><div className="opacity-70">Нужди</div><div className="font-medium">{round2(sNeeds)} {CURRENCY}</div></div>
-                  <div><div className="opacity-70">Желания</div><div className="font-medium">{round2(sInvest)} {CURRENCY}</div></div>
-                  <div><div className="opacity-70">Спестявания</div><div className="font-medium">{round2(sFun)} {CURRENCY}</div></div>
-                </div>
-              </TinyCard>
-
-              <Donut key={viewportW} title="Къде отидоха парите (категории)" data={pieData} />
-
-              <TinyCard title="Дългове">
-                <div className="grid grid-cols-5 gap-2 items-center mb-2">
-                  <input placeholder="Име" value={debtName} onChange={e=>setDebtName(e.target.value)} className="col-span-2 rounded-xl border border-slate-200 px-2 py-2 text-[16px] w-full min-w-0"/>
-                  <input type="number" inputMode="decimal" placeholder="Сума" value={debtAmount} onChange={e=>setDebtAmount(Number(e.target.value))} className="col-span-2 rounded-xl border border-slate-200 px-2 py-2 text-[16px] w-full min-w-0"/>
-                  <button type="button" onClick={addDebt} className="col-span-1 rounded-xl border border-slate-200 bg-[#f4f1e8] px-3 py-2 text-[16px] hover:bg-[#eee9dc] w-full"> + </button>
-                </div>
-                {(!debts || (debts as Debt[]).length===0) ? (
-                  <Empty>Няма въведени дългове.</Empty>
-                ) : (
-                  <ul className="space-y-1 text-sm">
-                    {(debts as Debt[]).map((d)=> (
-                      <li key={d.id} className="flex items-center justify-between gap-2 border-t border-slate-100 pt-1">
-                        <label className="flex items-center gap-2">
-                          <input type="checkbox" checked={!!d.done} onChange={()=>toggleDebt(d.id)} />
-                          <span className={d.done?"line-through opacity-60 break-words":"break-words"}>{d.name}</span>
-                        </label>
-                        <div className="flex items-center gap-2">
-                          <span className="font-medium">{round2(d.amount)} {CURRENCY}</span>
-                          <button type="button" onClick={()=>deleteDebt(d.id)} className="rounded-lg px-2 py-0.5 text-xs ring-1">✕</button>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </TinyCard>
-            </div>
-
-            {/* Lists */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 min-w-0">
+                        {/* Lists */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 min-w-0 mt-6">
               <ListCard title="Записи – Разходи (месец)">
                 {expMonth.length===0 ? (
                   <Empty>Няма разходи за този месец.</Empty>
@@ -348,6 +287,69 @@ export default function FinanceLight801010() {
                 )}
               </ListCard>
             </div>
+          </section>
+        )}
+
+        {/* Анализ */}
+        {tab==='analytics' && (
+          <section className="grid gap-4 min-w-0">
+            {/* Summary */}
+           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 min-w-0">
+              <Summary label="Приходи (месец)" value={totalInc} />
+              <Summary label="Разходи (месец)" value={totalExp} />
+              <Summary label="Нето резултат (Приходи − Разходи)" value={balance} tone={balance>=0?"pos":"neg"} />
+              <Summary label="Желан доход" value={desiredIncome}>
+            <div className="mt-1 text-[11px] opacity-70">
+                Текущ доход: <b className="text-emerald-700">{round2(totalInc)} {CURRENCY}</b>
+             <br/>
+                 Недостиг: <b className={`${desiredDiff>0?'text-rose-600':desiredDiff<0?'text-emerald-600':''}`}>
+                  {round2(desiredDiff)} {CURRENCY}
+            </b> {desiredDiff>0? "(за да покриеш модела)" : desiredDiff<0? "(излишък)" : ""}
+             <br/>
+                 Необходима сума: <b className="text-black">{round2(requiredExtra)} {CURRENCY}</b>
+            </div>
+             </Summary>
+               </div>
+            {/* 80/10/10 + Donut + Debts */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 min-w-0">
+              <TinyCard title="Разпределение по 80/10/10">
+                <div className="grid grid-cols-3 gap-2 text-sm">
+                  <div><div className="opacity-70">Нужди</div><div className="font-medium">{round2(sNeeds)} {CURRENCY}</div></div>
+                  <div><div className="opacity-70">Желания</div><div className="font-medium">{round2(sInvest)} {CURRENCY}</div></div>
+                  <div><div className="opacity-70">Спестявания</div><div className="font-medium">{round2(sFun)} {CURRENCY}</div></div>
+                </div>
+              </TinyCard>
+
+              <Donut key={viewportW} title="Къде отидоха парите (категории)" data={pieData} />
+
+              <TinyCard title="Дългове">
+                <div className="grid grid-cols-5 gap-2 items-center mb-2">
+                  <input placeholder="Име" value={debtName} onChange={e=>setDebtName(e.target.value)} className="col-span-2 rounded-xl border border-slate-200 px-2 py-2 text-[16px] w-full min-w-0"/>
+                  <input type="number" inputMode="decimal" placeholder="Сума" value={debtAmount} onChange={e=>setDebtAmount(Number(e.target.value))} className="col-span-2 rounded-xl border border-slate-200 px-2 py-2 text-[16px] w-full min-w-0"/>
+                  <button type="button" onClick={addDebt} className="col-span-1 rounded-xl border border-slate-200 bg-[#f4f1e8] px-3 py-2 text-[16px] hover:bg-[#eee9dc] w-full"> + </button>
+                </div>
+                {(!debts || (debts as Debt[]).length===0) ? (
+                  <Empty>Няма въведени дългове.</Empty>
+                ) : (
+                  <ul className="space-y-1 text-sm">
+                    {(debts as Debt[]).map((d)=> (
+                      <li key={d.id} className="flex items-center justify-between gap-2 border-t border-slate-100 pt-1">
+                        <label className="flex items-center gap-2">
+                          <input type="checkbox" checked={!!d.done} onChange={()=>toggleDebt(d.id)} />
+                          <span className={d.done?"line-through opacity-60 break-words":"break-words"}>{d.name}</span>
+                        </label>
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium">{round2(d.amount)} {CURRENCY}</span>
+                          <button type="button" onClick={()=>deleteDebt(d.id)} className="rounded-lg px-2 py-0.5 text-xs ring-1">✕</button>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </TinyCard>
+            </div>
+
+
 
             <div className="flex justify-end">
               <button type="button" onClick={exportCSV} className="rounded-xl border border-slate-200 bg-white px-3 py-1 text-sm shadow-sm hover:bg-slate-50">Експорт в Excel (CSV)</button>
