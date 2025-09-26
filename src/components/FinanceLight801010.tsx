@@ -179,7 +179,7 @@ export default function FinanceLight801010() {
         {/* Въвеждане */}
         {tab==='input' && (
           <section className="grid gap-3 min-w-0">
-            <Card title="Бърз разход">
+            <Card title="Разходи">
               <div className="grid grid-cols-2 sm:grid-cols-6 gap-2 items-center min-w-0">
                 <input type="date" value={expDate} onChange={e=>setExpDate(e.target.value)} className="col-span-2 rounded-xl border border-slate-200 px-2 py-2 text-[16px] w-full min-w-0" />
                 <select value={expCat} onChange={e=>setExpCat(e.target.value)} className="col-span-2 rounded-xl border border-slate-200 px-2 py-2 text-[16px] w-full min-w-0">
@@ -191,7 +191,7 @@ export default function FinanceLight801010() {
               </div>
             </Card>
 
-            <Card title="Бърз приход">
+            <Card title="Приходи">
               <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 items-center min-w-0">
                 <input type="date" value={incDate} onChange={e=>setIncDate(e.target.value)} className="col-span-2 rounded-xl border border-slate-200 px-2 py-2 text-[16px] w-full min-w-0" />
                 <input placeholder="Етикет" value={incLabel} onChange={e=>setIncLabel(e.target.value)} className="col-span-2 sm:col-span-2 rounded-xl border border-slate-200 px-2 py-2 text-[16px] w-full min-w-0" />
@@ -301,11 +301,6 @@ export default function FinanceLight801010() {
               <Summary label="Желан доход" value={desiredIncome}>
             <div className="mt-1 text-[11px] opacity-70">
                 Текущ доход: <b className="text-emerald-700">{round2(totalInc)} {CURRENCY}</b>
-             <br/>
-                 Недостиг: <b className={`${desiredDiff>0?'text-rose-600':desiredDiff<0?'text-emerald-600':''}`}>
-                  {round2(desiredDiff)} {CURRENCY}
-            </b> {desiredDiff>0? "(за да покриеш модела)" : desiredDiff<0? "(излишък)" : ""}
-             <br/>
                  Необходима сума: <b className="text-black">{round2(requiredExtra)} {CURRENCY}</b>
             </div>
              </Summary>
