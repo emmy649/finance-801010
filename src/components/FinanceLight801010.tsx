@@ -21,8 +21,8 @@ const defaultState = (() => {
     incomes: [] as Income[],
     expenses: [] as Expense[],
     categories: [
-      "Сметки", "Храна", "Кредити", "Транспорт", "Здраве", "Облекло", "Хоби", "Цигари",
-      "Образование", "Други", "Кафе/Навън", "Подаръци",
+      "Дом", "Храна", "Транспорт", "Сметки", "Здраве", "Облекло", "Хоби", "Други",
+      "Образование", "Пътуване", "Кафе/Навън", "Подаръци",
     ],
     debts: [] as Debt[],
   }
@@ -301,7 +301,7 @@ export default function FinanceLight801010() {
               <Summary label="Желан доход" value={desiredIncome}>
             <div className="mt-1 text-[11px] opacity-70">
                 Текущ доход: <b className="text-emerald-700">{round2(totalInc)} {CURRENCY}</b>
-              <br/>
+             <br/>
                  Недостиг: <b className={`${desiredDiff>0?'text-rose-600':desiredDiff<0?'text-emerald-600':''}`}>
                   {round2(desiredDiff)} {CURRENCY}
             </b> {desiredDiff>0? "(за да покриеш модела)" : desiredDiff<0? "(излишък)" : ""}
